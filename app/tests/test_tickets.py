@@ -1,12 +1,20 @@
-from unittest.mock import Mock, patch
-from app.controllers import ticket
-from nose.tools import assert_is_not_none
+from json import loads
+from unittest.mock import patch
+
+from nose.tools import assert_list_equal
+
+from app.services.processor import process_one
 
 
-@patch('app.controllers.ticket.get')
-def test_get_tickets(mock_get):
+def mock(m):
+    with open("pytickets/app/tests/mocks/tickets/{0}.json".format(m)) as mock:
+        return mock.read()
 
-    mock_get.return_value.ok = True
-    res = ticket.get(1)
-    assert_is_not_none(res)
 
+@patch('app.controllers.ticket.requests.get')
+def test_process_one(mock_get):
+    raw_ticket = mock("raw/ticket")
+    processed_ticket = process_one(raw_ticket)
+    ticket = mock("ticket")
+
+    assert_list_equal(loads(processed_ticket), loads(ticket))
