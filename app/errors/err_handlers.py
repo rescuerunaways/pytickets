@@ -1,3 +1,5 @@
+from json import dumps
+
 from app import app
 
 
@@ -11,9 +13,9 @@ def is_ok(res):
 
 @app.errorhandler(404)
 def not_found(error):
-    return "Server error:{0}".format(Exception(error))
+    return dumps("Server error:{0}".format(Exception(error)))
 
 
 @app.errorhandler(Exception)
 def server_error(error):
-    return "Server error:{0}".format(error)
+    return dumps("Server error:{0}".format(error))
