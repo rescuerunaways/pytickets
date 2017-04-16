@@ -1,26 +1,17 @@
 import unittest
-from json import loads
 from unittest.mock import MagicMock as Mock
 from unittest.mock import patch
 
-# from nose.tools import assert_list_equal
-from app.controllers import ticket
+from app.errors.err_handlers import is_ok
 
 
-def mock(m):
-    with open("app/tests/mocks/tickets/{0}.json".format(m)) as mock:
-        return mock.read()
-
-
-class DefaultWidgetSizeTestCase(unittest.TestCase):
+class TicketsTestCase(unittest.TestCase):
     @patch('app.controllers.ticket.requests.get')
-    def test_get_one(self, mock_api_call):
-        mock_api_call.return_value = Mock(status_code=200, text=mock("raw/ticket"))
-        response = ticket.get_one(1)
-        self.assertCountEqual(loads(mock("ticket")), loads(response));
+    def test_get_error(self, mock_api_call):
+        mock_api_call.return_value = Mock(ok=False)
+        self.assertRaises(Exception, is_ok, mock_api_call.return_value)
 
     @patch('app.controllers.ticket.requests.get')
-    def test_get_one(self, mock_api_call):
-        mock_api_call.return_value = Mock(status_code=200, text=mock("raw/ticket_list"))
-        response = ticket.get_list()
-        self.assertCountEqual(loads(mock("ticket_list")), loads(response));
+    def test_get_ok(self, mock_api_call):
+        mock_api_call.return_value = Mock(ok=True)
+        self.assertIsNone(is_ok(mock_api_call.return_value))
